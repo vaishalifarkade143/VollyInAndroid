@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -51,26 +52,27 @@ public class ServletTest extends AppCompatActivity
         String pass1 = reg_pass.getText().toString();
         String gender1 = reg_gender.getText().toString();//now this stored(in request obj) value go to the api using volly library which we have created in netbeans (ServletTest)
         System.out.println(name1);
+
         RequestQueue requestQueue=Volley.newRequestQueue(this);
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Loading..");
-        builder.setMessage("Please wait..");
-        builder.show();
+//        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        builder.setTitle("Loading..");
+//        builder.setMessage("Please wait..");
+//        builder.show();
+//        AlertDialog alertDialog = builder.create();
 
-
-        AlertDialog alertDialog = builder.create();
-
-
-
-
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Loding");
+        progressDialog.setMessage("wait...");
+        progressDialog.show();
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST,
-                "https://192.168.1.18:9494/Testing/ServletTest",
+                "https://192.168.1.17:9494/Testing/ServletTest",
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        alertDialog.hide();
+                       //alertDialog.hide();
+                        progressDialog.hide();
                         Log.d("responce","onResponce() is being executed");
                         Toast.makeText(ServletTest.this, ""+response, Toast.LENGTH_SHORT).show();
                     }
@@ -78,20 +80,20 @@ public class ServletTest extends AppCompatActivity
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        alertDialog.hide();
+                        //alertDialog.hide();
+                        progressDialog.hide();
                         Log.d("error","oneError() is being executed");
                         Toast.makeText(ServletTest.this, ""+error, Toast.LENGTH_SHORT).show();
 
                     }
-                }
-        )
+                })
 
 //
         {
             @Nullable
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-                HashMap<String,String> hm = new HashMap<>();
+                Map<String,String> hm = new HashMap<String,String>();
                 hm.put("key_name", name1);
                 hm.put("key_email", email1);
                 hm.put("key_pass", pass1);
@@ -101,6 +103,10 @@ public class ServletTest extends AppCompatActivity
         };
 
         //time out code
+//        stringRequest.setRetryPolicy(new DefaultRetryPolicy(1000,
+//                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+//                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
 
        requestQueue.add(stringRequest);
     }
